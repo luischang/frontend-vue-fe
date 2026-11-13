@@ -33,6 +33,17 @@ export default defineRouter((/* { store, ssrContext } */) => {
     history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
   })
 
+  Router.beforeEach((to) => {
+    const isPublicRoute = ['/login', '/register'].includes(to.path)
+    const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+
+    if (!isPublicRoute && !token) {
+      return { path: '/login', query: { redirect: to.fullPath } }
+    }
+
+    return true
+  })
+
   // enable HMR for it
   if (import.meta.hot) {
     handleHotUpdate(Router)
